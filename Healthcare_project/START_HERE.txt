@@ -1,0 +1,127 @@
+ANEMIASENSE - FIXED LIGHTGBM PATIENT PORTAL
+===========================================
+
+This version fixes the previous frontend/backend problems:
+1. LightGBM prediction request uses the correct 10 features.
+2. Frontend and Flask use the same /api/predict endpoint.
+3. JWT token is automatically attached to API requests.
+4. JWT session lasts 12 hours to avoid frequent 401 errors.
+5. Every successful prediction is saved to SQLite per logged-in user.
+6. My Reports loads all saved reports and provides a View dialog.
+7. Dashboard loads latest report, report count and recent activity.
+8. Health Trends loads values from saved reports.
+9. Profile loads and updates name/email and has Log Out.
+10. Recommendations loads the latest saved report.
+11. Existing SQLite databases are automatically upgraded with new report columns.
+
+IMPORTANT PROJECT STRUCTURE
+---------------------------
+Healthcare_project/
+  backend/
+    app.py
+    auth.py
+    database.py
+    prediction.py
+    recommendations.py
+    chatbot.py
+    anemiasense.db
+  frontend/
+    src/
+  ML/
+    train_model.py
+    evaluate_model.py
+    compare_model.py
+  Dataset/
+  ml_service/
+    models/
+      anemia_model.pkl
+      feature_names.pkl
+
+RUN BACKEND
+------------
+Open Terminal 1:
+
+cd "C:\Users\jaini\Downloads\Healthcare_project_FIXED\Healthcare_project\backend"
+
+If you already have a virtual environment:
+  .\venv\Scripts\activate
+
+Otherwise create one:
+  python -m venv venv
+  .\venv\Scripts\activate
+
+Install dependencies:
+  python -m pip install -r requirements.txt
+
+Start Flask:
+  python app.py
+
+Keep this terminal running.
+
+Test backend in browser:
+  http://127.0.0.1:5000/
+
+It should show JSON saying AnemiaSense API is running.
+
+RUN FRONTEND
+------------
+Open Terminal 2:
+
+cd "C:\Users\jaini\Downloads\Healthcare_project_FIXED\Healthcare_project\frontend"
+
+Install packages if needed:
+  npm install
+
+Start:
+  npm run dev
+
+Open the Vite URL shown in the terminal, normally:
+  http://localhost:5173
+
+LOGIN
+-----
+Use an existing account or create a new account.
+The token is saved as localStorage key: token.
+
+TEST PREDICTION
+---------------
+Login first, then Analyze Report.
+Enter all 10 values:
+  Ward Number
+  Hemoglobin
+  RBC
+  Hematocrit
+  WBC
+  Platelets
+  MCV
+  MCHC
+  MCH
+  RDW
+
+Click Run LightGBM Analysis.
+
+The backend prints:
+  NEW BLOOD REPORT
+  Data sent to LightGBM
+  REPORT SAVED SUCCESSFULLY. ID: ...
+
+Then open My Reports. The new report should be present.
+Dashboard and Health Trends read the same SQLite records.
+
+IF YOU SEE 401
+--------------
+Logout, then login again. The fixed API automatically attaches the token.
+If an old/expired token remains, remove the token from browser Local Storage and login again.
+
+IF YOU SEE MODEL ERROR
+----------------------
+Do not retrain the model first. Confirm that these files exist:
+  ml_service/models/anemia_model.pkl
+  ml_service/models/feature_names.pkl
+
+The model is expected to use these 10 features:
+  WardNum, ERY, HK, LEUKO, HB, PLT, MCV, MCHC, MCH, RDW
+
+MEDICAL NOTE
+------------
+This is a project-level screening/educational application. It is not a clinical diagnosis or replacement for professional medical care.
